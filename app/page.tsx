@@ -1,11 +1,12 @@
 "use client";
 
-import { Activity, BrainCircuit, Play, ShieldAlert } from "lucide-react";
+import { Activity, BrainCircuit, CheckCircle2, Cpu, ExternalLink, Play, ShieldAlert, Sparkles } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { personas } from "@/lib/personas";
 import type { SimulationResult } from "@/lib/simulation";
 
 const demoTargets = [
+  "http://localhost:3000/demo-flow",
   "https://www.amd.com/en/developer/resources/rocm-hub.html",
   "https://huggingface.co/spaces",
   "https://www.lablab.ai/"
@@ -39,6 +40,7 @@ export default function Home() {
   }
 
   const scores = result?.scores;
+  const modeLabel = result?.analysisMode === "model" ? "Qwen-VL on AMD" : "Local heuristic fallback";
 
   return (
     <div className="shell">
@@ -69,6 +71,18 @@ export default function Home() {
           {error ? <div className="error">{error}</div> : null}
         </form>
 
+        <div className="demoNote">
+          <div className="noteIcon">
+            <Sparkles size={16} />
+          </div>
+          <div>
+            <strong>Use this app for the real demo.</strong>
+            <p>
+              `demo.html` is only a backup. This version captures live pages and can switch from fallback scoring to AMD-hosted Qwen-VL.
+            </p>
+          </div>
+        </div>
+
         <div>
           <div className="label">Demo targets</div>
           <div className="personaList" style={{ marginTop: 8 }}>
@@ -97,6 +111,17 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        <div className="amdBox">
+          <div className="amdTop">
+            <Cpu size={16} />
+            <strong>AMD connection</strong>
+          </div>
+          <p>
+            Add an MI300X vLLM endpoint to `.env.local` when the cloud instance is ready.
+          </p>
+          <code>OPENAI_COMPAT_CHAT_URL</code>
+        </div>
       </aside>
 
       <main className="main">
@@ -112,6 +137,12 @@ export default function Home() {
             {result?.usedModel ? "Qwen-VL endpoint active" : "Heuristic mode"}
           </div>
         </div>
+
+        <section className="runStrip" aria-label="Demo flow">
+          <Step active={Boolean(result)} label="Capture" value={result ? "Screenshot ready" : "Waiting for URL"} />
+          <Step active={Boolean(result)} label="Analyze" value={result ? modeLabel : "Fallback ready"} />
+          <Step active={Boolean(result?.findings.length)} label="Report" value={result ? `${result.findings.length} findings` : "No run yet"} />
+        </section>
 
         <div className="grid">
           <section className="panel">
@@ -148,6 +179,20 @@ export default function Home() {
               <h3>Behavioral risk findings</h3>
               <ShieldAlert size={18} />
             </div>
+            {result ? (
+              <div className="resultMeta">
+                <div>
+                  <span>Mode</span>
+                  <strong>{modeLabel}</strong>
+                </div>
+                <div>
+                  <span>Page signals</span>
+                  <strong>
+                    {result.pageFacts.buttonCount} buttons / {result.pageFacts.linkCount} links / {result.pageFacts.inputCount} inputs
+                  </strong>
+                </div>
+              </div>
+            ) : null}
             {scores ? (
               <div className="scoreGrid">
                 <Score label="Confusion" value={scores.confusion} />
@@ -173,9 +218,13 @@ export default function Home() {
                 </article>
               ))}
               {!result ? (
-                <p className="summary">
-                  This MVP is wired for Playwright screenshots plus Qwen/Qwen-VL running behind an AMD Developer Cloud vLLM endpoint.
-                </p>
+                <div className="emptyBrief">
+                  <h4>Primary judging path</h4>
+                  <p>Run the Next app, show live screenshot capture, then connect AMD/Qwen-VL when the MI300X endpoint is available.</p>
+                  <a href="https://github.com/vllm-project/vllm" target="_blank" rel="noreferrer">
+                    vLLM serves Qwen-VL as an OpenAI-compatible API <ExternalLink size={13} />
+                  </a>
+                </div>
               ) : null}
             </div>
           </aside>
@@ -190,6 +239,18 @@ function Score({ label, value }: { label: string; value: number }) {
     <div className="score">
       <span>{label}</span>
       <strong>{value}</strong>
+    </div>
+  );
+}
+
+function Step({ active, label, value }: { active: boolean; label: string; value: string }) {
+  return (
+    <div className={`step ${active ? "active" : ""}`}>
+      <CheckCircle2 size={17} />
+      <div>
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </div>
     </div>
   );
 }

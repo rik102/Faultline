@@ -16,6 +16,13 @@ export type SimulationFinding = {
 export type SimulationResult = {
   targetUrl: string;
   screenshot?: string;
+  analysisMode: "heuristic" | "model";
+  pageFacts: {
+    buttonCount: number;
+    linkCount: number;
+    inputCount: number;
+    headingCount: number;
+  };
   summary: string;
   scores: {
     confusion: number;
@@ -50,49 +57,94 @@ function fallbackFindings(facts: PageFacts, selectedPersonas: Persona[]): Simula
   const text = `${facts.title} ${facts.headings.join(" ")} ${facts.buttons.join(" ")} ${facts.links.join(" ")} ${facts.inputs.join(" ")} ${facts.textSample}`;
   const buttonCount = facts.buttons.length;
   const inputCount = facts.inputs.length;
+  const actionLabels = facts.buttons.join(", ") || "no button labels";
   const hasPriceOrPayment = keywordScore(text, ["pay", "price", "checkout", "card", "subscription"]) > 0;
+  const hasRefundOrPolicy = keywordScore(text, ["refund", "policy", "cancel", "renewal", "support"]) > 0;
   const hasVagueContinue = facts.buttons.some((label) => /continue|next|submit/i.test(label));
   const dense = facts.textSample.length > 1200 || buttonCount + facts.links.length > 24;
 
   return selectedPersonas.slice(0, 6).map((persona, index) => {
-    if (persona.id === "scammer") {
+    if (persona.id === "elderly-low-tech") {
+      return {
+        persona: persona.name,
+        severity: inputCount > 2 || hasVagueContinue ? "high" : "medium",
+        theme: "Form confidence risk",
+        evidence: `The first viewport contains ${inputCount} form controls and action labels including ${actionLabels}. This user needs clear field expectations and a single safe next step.`,
+        recommendation: "Add inline helper text for sensitive fields, mark what is optional, and replace vague secondary actions with explicit outcomes.",
+        x: 52,
+        y: 43,
+        emotion: "confused"
+      };
+    }
+
+    if (persona.id === "distracted-parent") {
       return {
         persona: persona.name,
         severity: hasPriceOrPayment ? "high" : "medium",
-        theme: "Policy and authorization probing",
+        theme: "Surprise charge anxiety",
         evidence: hasPriceOrPayment
+          ? "Billing, card, subscription, or renewal language appears while the user is trying to scan quickly."
+          : "The flow asks for commitment before the cost and consequence language is easy to compare.",
+        recommendation: "Place renewal timing, cancellation terms, and total cost directly beside the primary confirmation action.",
+        x: 79,
+        y: 40,
+        emotion: "anxious"
+      };
+    }
+
+    if (persona.id === "impatient-shopper") {
+      return {
+        persona: persona.name,
+        severity: buttonCount > 2 ? "high" : "medium",
+        theme: "Competing next actions",
+        evidence: `Detected ${buttonCount} buttons in the first viewport. Multiple similarly weighted choices slow a user who wants one obvious path.`,
+        recommendation: "Make one primary action dominant, demote secondary paths, and move sales/help options away from checkout confirmation.",
+        x: 44,
+        y: 66,
+        emotion: "frustrated"
+      };
+    }
+
+    if (persona.id === "non-native-speaker") {
+      return {
+        persona: persona.name,
+        severity: hasVagueContinue ? "high" : "medium",
+        theme: "Literal-language ambiguity",
+        evidence: hasVagueContinue
+          ? "A generic Continue action does not say whether it saves, charges, submits, or advances to review."
+          : "Important decision copy may require careful interpretation rather than plain outcome-oriented labels.",
+        recommendation: "Use concrete verbs on every action, such as Review billing, Start free trial, or Confirm paid subscription.",
+        x: 51,
+        y: 66,
+        emotion: "confused"
+      };
+    }
+
+    if (persona.id === "visual-overload") {
+      return {
+        persona: persona.name,
+        severity: dense || buttonCount > 2 ? "high" : "medium",
+        theme: "Cognitive overload",
+        evidence: `Detected ${buttonCount} buttons, ${facts.links.length} links, ${inputCount} inputs, and ${facts.headings.length} headings in the first viewport context.`,
+        recommendation: "Group secondary choices, reduce simultaneous decision points, and anchor the primary path with stronger visual hierarchy.",
+        x: 57,
+        y: 52,
+        emotion: "confused"
+      };
+    }
+
+    if (persona.id === "scammer") {
+      return {
+        persona: persona.name,
+        severity: hasPriceOrPayment || hasRefundOrPolicy ? "high" : "medium",
+        theme: "Policy and authorization probing",
+        evidence: hasPriceOrPayment || hasRefundOrPolicy
           ? "Payment or purchase language is visible, but the page needs explicit refund, authorization, and confirmation boundaries."
           : "The flow exposes decision points that should be checked for policy bypass and support manipulation.",
         recommendation: "Add explicit state transitions for irreversible actions and log suspicious repeated path exploration.",
         x: 78,
         y: 42,
         emotion: "mistrustful"
-      };
-    }
-
-    if (persona.id === "visual-overload" || dense) {
-      return {
-        persona: persona.name,
-        severity: dense ? "high" : "medium",
-        theme: "Cognitive overload",
-        evidence: `Detected ${buttonCount} buttons, ${facts.links.length} links, and ${inputCount} inputs in the first viewport context.`,
-        recommendation: "Reduce competing calls to action, group secondary choices, and make the primary next action visually dominant.",
-        x: 52,
-        y: 34 + index * 5,
-        emotion: "confused"
-      };
-    }
-
-    if (hasVagueContinue) {
-      return {
-        persona: persona.name,
-        severity: "medium",
-        theme: "Ambiguous action wording",
-        evidence: "A generic Continue/Next/Submit action can be interpreted as final confirmation by stressed or literal users.",
-        recommendation: "Rename vague action labels to the concrete outcome, for example Review order, Create account, or Continue to payment.",
-        x: 64,
-        y: 58,
-        emotion: "anxious"
       };
     }
 
@@ -123,7 +175,14 @@ async function capturePage(targetUrl: string): Promise<{ screenshot: string; fac
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   const timeout = Number(process.env.PLAYWRIGHT_TIMEOUT_MS ?? 20000);
 
-  await page.goto(targetUrl, { waitUntil: "networkidle", timeout });
+  try {
+    await page.goto(targetUrl, { waitUntil: "networkidle", timeout });
+  } catch (error) {
+    if (!(error instanceof Error) || !error.message.toLowerCase().includes("timeout")) {
+      throw error;
+    }
+    await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout });
+  }
 
   const facts = await page.evaluate(() => {
     const visibleText = (element: Element | null) =>
@@ -249,6 +308,13 @@ export async function runSimulation(targetUrl: string): Promise<SimulationResult
   return {
     targetUrl,
     screenshot,
+    analysisMode: usedModel ? "model" : "heuristic",
+    pageFacts: {
+      buttonCount: facts.buttons.length,
+      linkCount: facts.links.length,
+      inputCount: facts.inputs.length,
+      headingCount: facts.headings.length
+    },
     summary,
     scores: {
       confusion: clampScore(34 + medium * 7 + high * 12),

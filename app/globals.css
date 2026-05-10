@@ -113,6 +113,62 @@ input {
   cursor: wait;
 }
 
+.demoNote,
+.amdBox {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fbfb;
+  padding: 12px;
+}
+
+.demoNote {
+  display: flex;
+  gap: 10px;
+}
+
+.demoNote strong,
+.amdBox strong {
+  display: block;
+  font-size: 13px;
+}
+
+.demoNote p,
+.amdBox p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.noteIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  background: #e0f2ef;
+  flex: 0 0 auto;
+}
+
+.amdTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amdBox code {
+  display: block;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  padding: 8px;
+  color: var(--ink);
+  font-size: 12px;
+}
+
 .personaList {
   display: grid;
   gap: 8px;
@@ -165,6 +221,45 @@ input {
   background: #fff;
   padding: 8px 12px;
   color: var(--muted);
+  font-size: 13px;
+}
+
+.runStrip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.step {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+
+.step.active {
+  border-color: rgba(15, 118, 110, 0.35);
+  color: var(--accent);
+  background: #f7fbfa;
+}
+
+.step span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.step strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink);
   font-size: 13px;
 }
 
@@ -236,9 +331,34 @@ input {
 
 .scoreGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   padding: 12px;
+}
+
+.resultMeta {
+  display: grid;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding: 12px;
+}
+
+.resultMeta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.resultMeta span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.resultMeta strong {
+  text-align: right;
+  font-size: 12px;
 }
 
 .score {
@@ -259,6 +379,10 @@ input {
   display: block;
   margin-top: 6px;
   font-size: 24px;
+}
+
+.score:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 .findings {
@@ -318,6 +442,36 @@ input {
   line-height: 1.4;
 }
 
+.emptyBrief {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fbfcfe;
+}
+
+.emptyBrief h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.emptyBrief p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.emptyBrief a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 @media (max-width: 1000px) {
   .shell {
     grid-template-columns: 1fr;
@@ -329,7 +483,205 @@ input {
   }
 
   .grid,
-  .scoreGrid {
+  .scoreGrid,
+  .runStrip {
     grid-template-columns: 1fr;
+  }
+}
+
+.demoFlow {
+  min-height: 100vh;
+  background: #f4f7fb;
+  color: var(--ink);
+  padding: 48px;
+}
+
+.demoHero {
+  max-width: 1120px;
+  margin: 0 auto 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  align-items: flex-end;
+}
+
+.demoEyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.demoHero h1 {
+  margin: 0;
+  max-width: 620px;
+  font-size: 42px;
+  line-height: 1.05;
+}
+
+.demoHero p {
+  max-width: 640px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.trustStack {
+  display: grid;
+  gap: 8px;
+  min-width: 190px;
+}
+
+.trustStack span {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.checkoutGrid {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.9fr);
+  gap: 18px;
+}
+
+.checkoutPanel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 22px;
+}
+
+.checkoutHeader {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.checkoutHeader svg {
+  color: var(--accent);
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.checkoutHeader.warning svg {
+  color: var(--gold);
+}
+
+.checkoutHeader h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.checkoutHeader p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.checkoutPanel label {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.checkoutPanel input,
+.checkoutPanel select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 12px;
+  color: var(--ink);
+  font: inherit;
+  text-transform: none;
+}
+
+.choiceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.choiceRow button,
+.fullWidthAction {
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.choiceRow .secondaryAction {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+}
+
+.riskList {
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.riskList div {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.riskList dt {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.riskList dd {
+  margin: 5px 0 0;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.fullWidthAction {
+  width: 100%;
+  margin-top: 20px;
+  background: var(--accent-2);
+}
+
+@media (max-width: 800px) {
+  .demoFlow {
+    padding: 24px;
+  }
+
+  .demoHero,
+  .checkoutGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .demoHero {
+    display: grid;
+    align-items: start;
+  }
+
+  .demoHero h1 {
+    font-size: 34px;
   }
 }
