@@ -16,8 +16,12 @@
   --blue-soft: #edf4ff;
   --violet: #7657d6;
   --violet-soft: #f2eeff;
-  --shadow: 0 22px 55px rgba(38, 53, 78, 0.12);
-  --shadow-soft: 0 10px 28px rgba(38, 53, 78, 0.08);
+  --rose: #e34b76;
+  --rose-soft: #fff0f5;
+  --sidebar-ink: #f7fbff;
+  --sidebar-muted: #a7bed0;
+  --shadow: 0 24px 70px rgba(4, 16, 36, 0.22);
+  --shadow-soft: 0 12px 32px rgba(4, 16, 36, 0.12);
 }
 
 * {
@@ -27,8 +31,10 @@
 body {
   margin: 0;
   background:
-    linear-gradient(135deg, rgba(8, 127, 115, 0.16) 0%, rgba(47, 111, 237, 0.08) 42%, rgba(217, 71, 54, 0.1) 100%),
-    linear-gradient(180deg, #f8fbfc 0%, #eef3f7 100%),
+    radial-gradient(circle at 8% 10%, rgba(45, 212, 191, 0.34), transparent 30%),
+    radial-gradient(circle at 78% 4%, rgba(118, 87, 214, 0.34), transparent 32%),
+    radial-gradient(circle at 88% 88%, rgba(227, 75, 118, 0.26), transparent 30%),
+    linear-gradient(135deg, #072033 0%, #0b5f69 40%, #4f46a5 76%, #b83265 100%),
     var(--paper);
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -49,19 +55,21 @@ button {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .sidebar {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(246, 250, 252, 0.84)),
-    linear-gradient(135deg, rgba(8, 127, 115, 0.08), rgba(47, 111, 237, 0.05));
+    linear-gradient(180deg, rgba(4, 18, 35, 0.94), rgba(5, 47, 55, 0.9) 58%, rgba(43, 31, 93, 0.9)),
+    linear-gradient(135deg, rgba(45, 212, 191, 0.16), rgba(227, 75, 118, 0.12));
   backdrop-filter: blur(18px);
-  border-right: 1px solid var(--line);
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
   padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   min-width: 0;
+  color: var(--sidebar-ink);
 }
 
 .brand {
@@ -77,9 +85,9 @@ button {
   display: grid;
   place-items: center;
   color: #fff;
-  background: linear-gradient(145deg, #11a391, #086a65 58%, #2f6fed);
-  font-weight: 800;
-  box-shadow: 0 10px 24px rgba(10, 124, 114, 0.22);
+  background: linear-gradient(145deg, #2dd4bf, #2f6fed 58%, #e34b76);
+  font-weight: 900;
+  box-shadow: 0 16px 36px rgba(45, 212, 191, 0.24);
 }
 
 .brand h1 {
@@ -91,7 +99,7 @@ button {
 .brand p,
 .sidebar p {
   margin: 4px 0 0;
-  color: var(--muted);
+  color: var(--sidebar-muted);
   font-size: 13px;
   line-height: 1.45;
 }
@@ -103,7 +111,7 @@ button {
 
 .label {
   font-size: 11px;
-  color: #737d8d;
+  color: var(--sidebar-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -112,18 +120,22 @@ button {
 .input {
   width: 100%;
   min-width: 0;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 12px;
   padding: 12px 13px;
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #f7fbff;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   outline: none;
 }
 
 .input:focus {
-  border-color: rgba(10, 124, 114, 0.55);
-  box-shadow: 0 0 0 4px rgba(10, 124, 114, 0.1);
+  border-color: rgba(45, 212, 191, 0.7);
+  box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.14);
+}
+
+.input::placeholder {
+  color: rgba(247, 251, 255, 0.52);
 }
 
 .button {
@@ -131,20 +143,20 @@ button {
   border-radius: 12px;
   padding: 12px 14px;
   color: #fff;
-  background: linear-gradient(135deg, #10a08f 0%, #08766c 58%, #2f6fed 140%);
+  background: linear-gradient(135deg, #2dd4bf 0%, #2f6fed 54%, #e34b76 132%);
   font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 12px 24px rgba(10, 124, 114, 0.18);
+  box-shadow: 0 16px 34px rgba(47, 111, 237, 0.26);
   transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
 }
 
 .button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 30px rgba(10, 124, 114, 0.22);
+  box-shadow: 0 20px 42px rgba(47, 111, 237, 0.32);
 }
 
 .button:disabled {
@@ -152,45 +164,26 @@ button {
   cursor: wait;
 }
 
-.demoNote,
 .amdBox {
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 14px;
   background:
-    linear-gradient(135deg, rgba(230, 248, 244, 0.92), rgba(237, 244, 255, 0.8)),
-    rgba(255, 255, 255, 0.72);
+    linear-gradient(135deg, rgba(45, 212, 191, 0.16), rgba(118, 87, 214, 0.18)),
+    rgba(255, 255, 255, 0.08);
   padding: 12px;
   box-shadow: var(--shadow-soft);
 }
 
-.demoNote {
-  display: flex;
-  gap: 10px;
-}
-
-.demoNote strong,
 .amdBox strong {
   display: block;
   font-size: 13px;
 }
 
-.demoNote p,
 .amdBox p {
   margin: 5px 0 0;
-  color: var(--muted);
+  color: var(--sidebar-muted);
   font-size: 12px;
   line-height: 1.45;
-}
-
-.noteIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: 9px;
-  display: grid;
-  place-items: center;
-  color: var(--accent);
-  background: linear-gradient(135deg, var(--accent-soft), var(--blue-soft));
-  flex: 0 0 auto;
 }
 
 .amdTop {
@@ -203,11 +196,11 @@ button {
   display: block;
   margin-top: 10px;
   overflow-wrap: anywhere;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.76);
+  background: rgba(255, 255, 255, 0.1);
   padding: 8px;
-  color: var(--ink);
+  color: #f7fbff;
   font-size: 12px;
 }
 
@@ -218,12 +211,12 @@ button {
 }
 
 .persona {
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 11px;
   min-width: 0;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .targetButton {
@@ -241,7 +234,7 @@ button {
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
-  background: var(--accent);
+  background: #2dd4bf;
   opacity: 0;
   transition: opacity 140ms ease;
 }
@@ -255,20 +248,20 @@ button {
 }
 
 .targetButton:nth-child(4)::before {
-  background: var(--gold);
+  background: var(--rose);
 }
 
 .targetButton:hover {
-  border-color: rgba(15, 118, 110, 0.45);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(237, 244, 255, 0.65));
+  border-color: rgba(45, 212, 191, 0.45);
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.16), rgba(47, 111, 237, 0.16));
   transform: translateY(-1px);
   box-shadow: var(--shadow-soft);
 }
 
 .targetButton.selected {
-  border-color: rgba(15, 118, 110, 0.65);
-  background: linear-gradient(135deg, var(--accent-soft), rgba(237, 244, 255, 0.82));
-  box-shadow: 0 0 0 4px rgba(10, 124, 114, 0.06);
+  border-color: rgba(45, 212, 191, 0.72);
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.22), rgba(47, 111, 237, 0.2), rgba(227, 75, 118, 0.12));
+  box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.08);
 }
 
 .targetButton.selected::before,
@@ -284,7 +277,7 @@ button {
 .persona span {
   display: block;
   margin-top: 3px;
-  color: var(--muted);
+  color: var(--sidebar-muted);
   font-size: 12px;
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -293,7 +286,7 @@ button {
 .persona em {
   display: inline-flex;
   margin-top: 8px;
-  color: var(--accent);
+  color: #7dd3fc;
   font-size: 11px;
   font-style: normal;
   font-weight: 800;
@@ -303,6 +296,10 @@ button {
 .main {
   min-width: 0;
   padding: 30px;
+  background:
+    linear-gradient(180deg, rgba(248, 251, 255, 0.88), rgba(238, 243, 247, 0.8)),
+    rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(20px);
 }
 
 .toolbar {
@@ -317,15 +314,16 @@ button {
   margin: 0;
   font-size: 30px;
   letter-spacing: 0;
+  color: #0c1c2f;
 }
 
 .status {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(47, 111, 237, 0.16);
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(242, 238, 255, 0.72));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(242, 238, 255, 0.88));
   padding: 8px 12px;
   color: var(--muted);
   font-size: 13px;
@@ -339,10 +337,10 @@ button {
 }
 
 .step {
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 14px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 244, 255, 0.58)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 244, 255, 0.7)),
     #fff;
   padding: 12px;
   display: flex;
@@ -381,9 +379,9 @@ button {
 
 .panel {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(250, 252, 255, 0.94)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 252, 255, 0.92)),
     var(--panel);
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -392,7 +390,9 @@ button {
 .panelHeader {
   padding: 14px 16px;
   border-bottom: 1px solid var(--line);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(237, 244, 255, 0.42));
+  background:
+    linear-gradient(90deg, rgba(45, 212, 191, 0.14), rgba(47, 111, 237, 0.12), rgba(227, 75, 118, 0.1)),
+    rgba(255, 255, 255, 0.86);
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -435,13 +435,42 @@ button {
 
 .hotspot {
   position: absolute;
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   border: 2px solid #fff;
-  box-shadow: 0 0 0 7px rgba(217, 71, 54, 0.18), 0 10px 24px rgba(217, 71, 54, 0.18);
-  background: linear-gradient(180deg, #ee5a46, #b91f18);
+  box-shadow: 0 0 0 7px rgba(227, 75, 118, 0.18), 0 12px 28px rgba(139, 31, 64, 0.24);
+  background: linear-gradient(180deg, #ff6b95, #b91f51);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+
+.hotspot b {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.hotspot em {
+  position: absolute;
+  left: 22px;
+  top: 22px;
+  max-width: 180px;
+  min-width: 104px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 10px;
+  background: rgba(11, 31, 49, 0.88);
+  color: #f7fbff;
+  padding: 6px 8px;
+  box-shadow: 0 12px 28px rgba(4, 16, 36, 0.22);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: left;
+  text-transform: none;
 }
 
 .scoreGrid {
@@ -609,6 +638,20 @@ button {
   justify-content: space-between;
   gap: 10px;
   align-items: flex-start;
+}
+
+.findingIndex {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(180deg, #ff6b95, #b91f51);
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 8px 18px rgba(139, 31, 64, 0.18);
 }
 
 .finding h4 {
