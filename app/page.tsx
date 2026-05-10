@@ -1,16 +1,29 @@
 "use client";
 
-import { Activity, BrainCircuit, CheckCircle2, Cpu, ExternalLink, Play, ShieldAlert, Sparkles } from "lucide-react";
+import { Activity, BrainCircuit, CheckCircle2, Cpu, ExternalLink, Play, ShieldAlert } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { personas } from "@/lib/personas";
 import type { SimulationResult } from "@/lib/simulation";
 
 const demoTargets = [
-  "http://localhost:3000/demo-flow",
+  "/demo-flow",
   "https://www.amd.com/en/developer/resources/rocm-hub.html",
   "https://huggingface.co/spaces",
   "https://www.lablab.ai/"
 ];
+
+function resolveTargetUrl(value: string) {
+  return new URL(value, window.location.origin).toString();
+}
+
+function targetHost(value: string) {
+  try {
+    const url = new URL(value, "http://faultline.local");
+    return value.startsWith("/") ? "Built-in checkout flow" : url.hostname;
+  } catch {
+    return value;
+  }
+}
 
 export default function Home() {
   const [targetUrl, setTargetUrl] = useState(demoTargets[0]);
@@ -27,7 +40,7 @@ export default function Home() {
       const response = await fetch("/api/simulate", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ targetUrl })
+        body: JSON.stringify({ targetUrl: resolveTargetUrl(targetUrl) })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "Simulation failed");
@@ -71,18 +84,6 @@ export default function Home() {
           {error ? <div className="error">{error}</div> : null}
         </form>
 
-        <div className="demoNote">
-          <div className="noteIcon">
-            <Sparkles size={16} />
-          </div>
-          <div>
-            <strong>Use this app for the real demo.</strong>
-            <p>
-              `demo.html` is only a backup. This version captures live pages and can switch from fallback scoring to AMD-hosted Qwen-VL.
-            </p>
-          </div>
-        </div>
-
         <div>
           <div className="label">Demo targets</div>
           <div className="personaList" style={{ marginTop: 8 }}>
@@ -94,7 +95,7 @@ export default function Home() {
                 onClick={() => setTargetUrl(url)}
                 aria-pressed={targetUrl === url}
               >
-                <strong>{new URL(url).hostname}</strong>
+                <strong>{targetHost(url)}</strong>
                 <span>{url}</span>
                 <em>{targetUrl === url ? "Selected" : "Use target"}</em>
               </button>
@@ -162,7 +163,10 @@ export default function Home() {
                       key={`${finding.persona}-${index}`}
                       title={`${finding.persona}: ${finding.theme}`}
                       style={{ left: `${finding.x}%`, top: `${finding.y}%` }}
-                    />
+                    >
+                      <b>{index + 1}</b>
+                      <em>{finding.theme}</em>
+                    </span>
                   ))}
                 </>
               ) : (
@@ -240,6 +244,7 @@ export default function Home() {
               {(result?.findings ?? []).map((finding, index) => (
                 <article className={`finding ${finding.severity}`} key={`${finding.persona}-${index}`}>
                   <div className="findingTop">
+                    <span className="findingIndex">{index + 1}</span>
                     <div>
                       <h4>{finding.theme}</h4>
                       <p>{finding.persona} became {finding.emotion}.</p>
