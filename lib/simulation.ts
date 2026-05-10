@@ -48,6 +48,52 @@ function clampScore(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
 
+function coordinateToPercent(value: unknown, fallback: number) {
+  if (typeof value === "number") return clampScore(value);
+  if (typeof value !== "string") return fallback;
+
+  const parsed = Number(value);
+  if (Number.isFinite(parsed)) return clampScore(parsed);
+
+  const lower = value.toLowerCase();
+  if (lower.includes("left") || lower.includes("top")) return 25;
+  if (lower.includes("center") || lower.includes("middle")) return 50;
+  if (lower.includes("right") || lower.includes("bottom")) return 75;
+  return fallback;
+}
+
+function normalizeSeverity(value: unknown): SimulationFinding["severity"] {
+  return value === "low" || value === "medium" || value === "high" ? value : "medium";
+}
+
+function normalizeEmotion(value: unknown): SimulationFinding["emotion"] {
+  if (
+    value === "confused" ||
+    value === "anxious" ||
+    value === "frustrated" ||
+    value === "mistrustful" ||
+    value === "curious"
+  ) {
+    return value;
+  }
+  if (value === "annoyed" || value === "overwhelmed") return "frustrated";
+  if (value === "skeptical" || value === "suspicious") return "mistrustful";
+  return "confused";
+}
+
+function normalizeFinding(finding: Partial<SimulationFinding>, index: number): SimulationFinding {
+  return {
+    persona: String(finding.persona || `Synthetic persona ${index + 1}`),
+    severity: normalizeSeverity(finding.severity),
+    theme: String(finding.theme || "Behavioral risk"),
+    evidence: String(finding.evidence || "The page contains a behavioral risk signal for this persona."),
+    recommendation: String(finding.recommendation || "Clarify the primary action and reduce ambiguity near the decision point."),
+    x: coordinateToPercent(finding.x, 35 + index * 8),
+    y: coordinateToPercent(finding.y, 38 + index * 6),
+    emotion: normalizeEmotion(finding.emotion)
+  };
+}
+
 function keywordScore(text: string, words: string[]) {
   const lower = text.toLowerCase();
   return words.reduce((score, word) => score + (lower.includes(word) ? 1 : 0), 0);
@@ -237,7 +283,7 @@ async function modelFindings({
       {
         role: "system",
         content:
-          "You are Faultline, a behavioral failure simulation engine. Return concise JSON only. Identify UX, trust, accessibility, abandonment, and exploit risks from a screenshot and extracted DOM facts."
+          "You are Faultline, a behavioral failure simulation engine. Return valid JSON only, no markdown. Identify UX, trust, accessibility, abandonment, and exploit risks from a screenshot and extracted DOM facts."
       },
       {
         role: "user",
@@ -257,12 +303,18 @@ async function modelFindings({
                     theme: "string",
                     evidence: "string",
                     recommendation: "string",
-                    x: "0-100",
-                    y: "0-100",
+                    x: "number from 0 to 100, where 0 is left and 100 is right",
+                    y: "number from 0 to 100, where 0 is top and 100 is bottom",
                     emotion: "confused|anxious|frustrated|mistrustful|curious"
                   }
                 ]
-              }
+              },
+              rules: [
+                "Return exactly one JSON object with summary and findings.",
+                "Return 4 to 8 findings.",
+                "Use numeric x and y percentages, not words.",
+                "Use only the allowed severity and emotion enum values."
+              ]
             })
           },
           { type: "image_url", image_url: { url: screenshot } }
@@ -276,9 +328,14 @@ async function modelFindings({
   const jsonEnd = content.lastIndexOf("}");
   if (jsonStart < 0 || jsonEnd < jsonStart) return null;
 
-  return JSON.parse(content.slice(jsonStart, jsonEnd + 1)) as {
+  const parsed = JSON.parse(content.slice(jsonStart, jsonEnd + 1)) as {
     summary: string;
-    findings: SimulationFinding[];
+    findings?: Array<Partial<SimulationFinding>>;
+  };
+
+  return {
+    summary: parsed.summary,
+    findings: (parsed.findings ?? []).map(normalizeFinding)
   };
 }
 
