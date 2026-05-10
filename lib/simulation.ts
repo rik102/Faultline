@@ -22,6 +22,8 @@ export type SimulationResult = {
     linkCount: number;
     inputCount: number;
     headingCount: number;
+    analysisInputs: string[];
+    interaction: InteractionFacts;
   };
   summary: string;
   scores: {
@@ -42,6 +44,17 @@ type PageFacts = {
   inputs: string[];
   headings: string[];
   textSample: string;
+  interaction: InteractionFacts;
+};
+
+type InteractionFacts = {
+  buttonLabels: string[];
+  ambiguousActions: string[];
+  highImpactActions: string[];
+  competingActionCount: number;
+  repeatedActionLabels: string[];
+  stressRisk: "low" | "medium" | "high";
+  note: string;
 };
 
 function clampScore(value: number) {
@@ -240,19 +253,57 @@ async function capturePage(targetUrl: string): Promise<{ screenshot: string; fac
         .filter(Boolean)
         .slice(0, limit);
 
+    const buttons = take("button, [role='button'], input[type='submit']");
+    const links = take("a");
+    const inputs = Array.from(document.querySelectorAll("input, textarea, select"))
+      .map((input) => {
+        const element = input as HTMLInputElement;
+        return element.placeholder || element.name || element.id || element.type;
+      })
+      .filter(Boolean)
+      .slice(0, 30);
+    const headings = take("h1, h2, h3", 16);
+
+    const repeatedLabels = (labels: string[]) => {
+      const counts = new Map<string, number>();
+      labels.forEach((label) => {
+        const normalized = label.toLowerCase().trim();
+        if (!normalized) return;
+        counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
+      });
+      return Array.from(counts.entries())
+        .filter(([, count]) => count > 1)
+        .map(([label]) => label);
+    };
+
+    const ambiguousActions = buttons.filter((label) => /continue|next|submit|ok|confirm/i.test(label));
+    const highImpactActions = buttons.filter((label) =>
+      /pay|purchase|activate|confirm|delete|cancel|subscribe|start trial|checkout|submit/i.test(label)
+    );
+    let stressRisk: "low" | "medium" | "high" = "low";
+    if (highImpactActions.length > 0 && (ambiguousActions.length > 0 || buttons.length > 3 || inputs.length > 2)) {
+      stressRisk = "high";
+    } else if (buttons.length > 3 || ambiguousActions.length > 0) {
+      stressRisk = "medium";
+    }
+
     return {
       title: document.title,
-      buttons: take("button, [role='button'], input[type='submit']"),
-      links: take("a"),
-      inputs: Array.from(document.querySelectorAll("input, textarea, select"))
-        .map((input) => {
-          const element = input as HTMLInputElement;
-          return element.placeholder || element.name || element.id || element.type;
-        })
-        .filter(Boolean)
-        .slice(0, 30),
-      headings: take("h1, h2, h3", 16),
-      textSample: visibleText(document.body).slice(0, 2400)
+      buttons,
+      links,
+      inputs,
+      headings,
+      textSample: visibleText(document.body).slice(0, 2400),
+      interaction: {
+        buttonLabels: buttons,
+        ambiguousActions,
+        highImpactActions,
+        competingActionCount: buttons.length,
+        repeatedActionLabels: repeatedLabels(buttons),
+        stressRisk,
+        note:
+          "Interaction scan is non-destructive: Faultline inspects action labels and form pressure without clicking real purchase, submit, or destructive controls."
+      }
     };
   });
 
@@ -370,15 +421,34 @@ export async function runSimulation(targetUrl: string): Promise<SimulationResult
       buttonCount: facts.buttons.length,
       linkCount: facts.links.length,
       inputCount: facts.inputs.length,
-      headingCount: facts.headings.length
+      headingCount: facts.headings.length,
+      analysisInputs: [
+        "Playwright screenshot",
+        "DOM text",
+        "Button labels",
+        "Form/input fields",
+        "Headings and links",
+        usedModel ? "Qwen-VL multimodal reasoning" : "Heuristic fallback rules"
+      ],
+      interaction: facts.interaction
     },
     summary,
     scores: {
       confusion: clampScore(34 + medium * 7 + high * 12),
       trustRisk: clampScore(25 + keywordScore(text, ["pay", "card", "refund", "confirm", "subscription"]) * 13 + high * 9),
-      abandonment: clampScore(22 + facts.inputs.length * 5 + facts.buttons.length * 2),
-      exploitability: clampScore(18 + keywordScore(text, ["refund", "promo", "support", "admin", "invite"]) * 15),
-      visualOverload: clampScore(20 + facts.buttons.length * 3 + facts.links.length * 2 + Math.floor(facts.textSample.length / 120))
+      abandonment: clampScore(22 + facts.inputs.length * 5 + facts.buttons.length * 2 + facts.interaction.ambiguousActions.length * 7),
+      exploitability: clampScore(
+        18 +
+          keywordScore(text, ["refund", "promo", "support", "admin", "invite"]) * 15 +
+          facts.interaction.highImpactActions.length * 8
+      ),
+      visualOverload: clampScore(
+        20 +
+          facts.buttons.length * 3 +
+          facts.links.length * 2 +
+          Math.floor(facts.textSample.length / 120) +
+          (facts.interaction.stressRisk === "high" ? 10 : 0)
+      )
     },
     findings,
     usedModel

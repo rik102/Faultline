@@ -181,6 +181,24 @@ input {
   padding: 10px;
 }
 
+.targetButton {
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.targetButton:hover {
+  border-color: rgba(15, 118, 110, 0.45);
+  background: #f7fbfa;
+  transform: translateY(-1px);
+}
+
+.targetButton.selected {
+  border-color: rgba(15, 118, 110, 0.65);
+  background: #edf8f6;
+}
+
 .persona strong {
   display: block;
   font-size: 13px;
@@ -192,6 +210,16 @@ input {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.35;
+}
+
+.persona em {
+  display: inline-flex;
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .main {
@@ -359,6 +387,7 @@ input {
 .resultMeta strong {
   text-align: right;
   font-size: 12px;
+  line-height: 1.35;
 }
 
 .score {
@@ -379,6 +408,14 @@ input {
   display: block;
   margin-top: 6px;
   font-size: 24px;
+}
+
+.score small {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .score:last-child:nth-child(odd) {
@@ -404,6 +441,50 @@ input {
 
 .finding.low {
   border-left-color: var(--blue);
+}
+
+.interactionCard {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+  padding: 12px;
+}
+
+.interactionCard h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.interactionCard p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.interactionCard dl {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.interactionCard div {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.interactionCard dt {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.interactionCard dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .findingTop {
