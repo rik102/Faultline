@@ -5,11 +5,12 @@
   "description": "Synthetic human failure simulation for pre-release UX, trust, and accessibility testing.",
   "scripts": {
     "demo": "python3 -m http.server 8080",
-    "dev": "next dev",
+    "dev": "rm -rf .next && next dev",
     "build": "next build",
+    "check": "npm run typecheck && npm run lint && npm run build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "rm -f tsconfig.tsbuildinfo && tsc --noEmit"
   },
   "dependencies": {
     "@playwright/test": "^1.57.0",

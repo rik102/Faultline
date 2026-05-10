@@ -21,7 +21,15 @@ This is not classic QA. The question is not only whether the button works. The q
 - Trust, confusion, abandonment, exploitability, and visual overload scoring.
 - Heuristic fallback mode when no model endpoint is configured.
 
-## Run the no-install demo
+## Recommended demo path
+
+Use the Next.js app for judging and recording. It captures a live page with Playwright, extracts DOM signals, and can call Qwen-VL through an AMD Developer Cloud vLLM endpoint.
+
+The default target, `http://localhost:3000/demo-flow`, is a local checkout-style flow designed to produce a reliable pre-Qwen demo.
+
+Use `demo.html` only as a backup if the live app, network, or model endpoint fails.
+
+## Run the no-install backup
 
 Open `demo.html` directly in a browser, or run:
 
@@ -58,6 +66,8 @@ TEXT_MODEL=Qwen/Qwen2.5-7B-Instruct
 ```
 
 5. Restart `npm run dev`.
+
+The MI300X instance is not where the website lives. It is the GPU model server: Faultline sends the captured screenshot and prompt to Qwen-VL, and Qwen-VL sends back behavioral findings for the app to display.
 
 ## Hackathon positioning
 

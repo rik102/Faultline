@@ -11,9 +11,8 @@
 
 ## Do next before submission
 
-1. Push and merge this PR into `main`.
-2. Open `demo.html` in a browser and use it for the first pitch walkthrough.
-3. Install Node/npm locally or use a cloud dev environment, then run:
+1. Use the Next.js app as the primary demo. `demo.html` is only the backup if the live app or network fails.
+2. Install Node/npm locally or use a cloud dev environment, then run:
 
 ```bash
 npm install
@@ -22,9 +21,11 @@ cp .env.example .env.local
 npm run dev
 ```
 
-4. Start an AMD Developer Cloud MI300X instance.
-5. Serve Qwen-VL through an OpenAI-compatible vLLM endpoint.
-6. Add this to `.env.local`:
+3. Open `http://localhost:3000` and run the default local target, `http://localhost:3000/demo-flow`, through the simulation.
+4. Keep `http://localhost:8080/demo.html` ready as a no-install backup.
+5. Start an AMD Developer Cloud MI300X instance when the local demo flow feels solid.
+6. Serve Qwen-VL through an OpenAI-compatible vLLM endpoint.
+7. Add this to `.env.local`:
 
 ```bash
 OPENAI_COMPAT_CHAT_URL=http://YOUR_AMD_INSTANCE:8000/v1/chat/completions
@@ -32,16 +33,22 @@ VISION_MODEL=Qwen/Qwen2.5-VL-7B-Instruct
 TEXT_MODEL=Qwen/Qwen2.5-7B-Instruct
 ```
 
-7. Record a 2-3 minute demo:
+8. Record a 2-3 minute demo:
 
 - 20 seconds: problem and category framing.
-- 45 seconds: run synthetic agents in the demo.
-- 45 seconds: explain findings and heatmap.
-- 30 seconds: AMD/Qwen architecture.
+- 45 seconds: run synthetic agents in the Next app.
+- 45 seconds: explain screenshot, findings, risk scores, and heatmap.
+- 30 seconds: AMD/Qwen architecture: Faultline captures the page, AMD MI300X runs Qwen-VL through vLLM, and the app displays the analysis.
 - 20 seconds: business value and next roadmap.
 
-8. Publish at least two build-in-public posts tagging lablab and AMD.
-9. Create a Hugging Face Space if time allows; this helps with the special prize.
+9. Publish at least two build-in-public posts tagging lablab and AMD.
+10. Create a Hugging Face Space if time allows; this helps with the special prize.
+
+## Why AMD is in the architecture
+
+Faultline itself is the web app. The AMD MI300X instance is the GPU-backed model server. It runs Qwen-VL, the multimodal model that can read screenshots and DOM context. vLLM is the serving layer that exposes Qwen-VL as an OpenAI-compatible `/v1/chat/completions` API so the Next app can call it.
+
+Without AMD configured, the app still works in heuristic fallback mode. With AMD configured, the app becomes a real multimodal agent demo.
 
 ## What to connect for AMD
 

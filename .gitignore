@@ -8,5 +8,6 @@ coverage
 .env.*.local
 playwright-report
 test-results
+tsconfig.tsbuildinfo
 *.log
 .DS_Store
