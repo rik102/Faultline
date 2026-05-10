@@ -178,7 +178,7 @@ async function modelFindings({
       {
         role: "system",
         content:
-          "You are FailureLab, a behavioral failure simulation engine. Return concise JSON only. Identify UX, trust, accessibility, abandonment, and exploit risks from a screenshot and extracted DOM facts."
+          "You are Faultline, a behavioral failure simulation engine. Return concise JSON only. Identify UX, trust, accessibility, abandonment, and exploit risks from a screenshot and extracted DOM facts."
       },
       {
         role: "user",

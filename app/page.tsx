@@ -46,7 +46,7 @@ export default function Home() {
         <div className="brand">
           <div className="mark">FL</div>
           <div>
-            <h1>FailureLab</h1>
+            <h1>Faultline</h1>
             <p>Behavioral Failure Simulation</p>
           </div>
         </div>
@@ -102,7 +102,7 @@ export default function Home() {
       <main className="main">
         <div className="toolbar">
           <div>
-            <h2>Pre-release human chaos lab</h2>
+            <h2>Pre-release human failure lab</h2>
             <p className="summary">
               Agents inspect live UI screenshots, DOM signals, trust language, and decision density before real users suffer through the flow.
             </p>

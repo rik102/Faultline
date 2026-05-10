@@ -2,7 +2,7 @@
 
 ## Product framing
 
-FailureLab is Behavioral Failure Simulation for software teams.
+Faultline is Behavioral Failure Simulation for software teams.
 
 Instead of asking "did the button work?", teams ask:
 
@@ -59,7 +59,7 @@ Frames the category as Synthetic Human Testing and Behavioral Failure Simulation
 
 ## Build in Public checklist
 
-- Post 1: "We are building FailureLab, synthetic human testing for pre-release behavioral failure simulation." Tag lablab and AMD.
+- Post 1: "We are building Faultline, synthetic human testing for pre-release behavioral failure simulation." Tag lablab and AMD.
 - Post 2: Share a screenshot of emotional heatmaps and explain what AMD-hosted Qwen-VL found.
 - Include feedback about AMD Developer Cloud setup, ROCm model serving, and GPU inference throughput.
 
