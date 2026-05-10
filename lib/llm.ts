@@ -32,7 +32,8 @@ export async function callOpenAICompatibleChat({
       model,
       messages,
       max_tokens: maxTokens,
-      temperature: 0.35
+      temperature: 0.2,
+      response_format: { type: "json_object" }
     })
   });
 
