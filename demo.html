@@ -3,13 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FailureLab Demo</title>
+    <title>Faultline Demo</title>
     <style>
       :root {
+        color-scheme: light;
         --ink: #111827;
-        --muted: #5b6472;
+        --muted: #5c6675;
         --line: #d9dee7;
-        --paper: #f7f8fb;
+        --paper: #f5f7fb;
         --panel: #ffffff;
         --accent: #0f766e;
         --danger: #b42318;
@@ -23,48 +24,69 @@
         color: var(--ink);
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
-      .shell { min-height: 100vh; display: grid; grid-template-columns: 330px minmax(0, 1fr); }
-      .side { background: #fff; border-right: 1px solid var(--line); padding: 24px; }
-      .brand { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; }
-      .mark { width: 38px; height: 38px; border-radius: 8px; background: var(--accent); color: white; display: grid; place-items: center; font-weight: 900; }
+      button, input, select, textarea { font: inherit; }
+      .shell { min-height: 100vh; display: grid; grid-template-columns: 360px minmax(0, 1fr); }
+      .side { background: #fff; border-right: 1px solid var(--line); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+      .brand { display: flex; gap: 12px; align-items: center; }
+      .mark { width: 40px; height: 40px; border-radius: 8px; background: var(--accent); color: white; display: grid; place-items: center; font-weight: 900; }
       h1, h2, h3, h4, p { margin-top: 0; }
-      h1 { margin-bottom: 2px; font-size: 22px; }
-      h2 { margin-bottom: 6px; font-size: 28px; }
-      p { color: var(--muted); line-height: 1.5; }
+      h1 { margin-bottom: 2px; font-size: 23px; line-height: 1.05; }
+      h2 { margin-bottom: 6px; font-size: 29px; line-height: 1.1; }
+      h3 { margin: 0; font-size: 15px; }
+      h4 { margin: 0; font-size: 14px; }
+      p { color: var(--muted); line-height: 1.48; }
+      .subhead { margin: 0; font-size: 13px; color: var(--muted); }
       .label { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; }
-      .persona { border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin-top: 8px; background: #fff; }
+      .fieldStack { display: grid; gap: 10px; }
+      .input, .select, .textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; color: var(--ink); background: #fff; }
+      .textarea { min-height: 92px; resize: vertical; }
+      .button { border: 0; border-radius: 8px; padding: 12px 14px; color: white; background: var(--accent); font-weight: 850; cursor: pointer; }
+      .button.secondary { background: #e9eef5; color: var(--ink); }
+      .button:disabled { opacity: .62; cursor: wait; }
+      .personaGrid { display: grid; gap: 8px; }
+      .persona { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #fff; display: grid; gap: 3px; }
       .persona strong { display: block; font-size: 13px; }
-      .persona span { color: var(--muted); display: block; font-size: 12px; margin-top: 3px; }
-      .main { padding: 26px; }
-      .top { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 18px; }
-      .pill { border: 1px solid var(--line); border-radius: 999px; background: #fff; padding: 8px 12px; color: var(--muted); font-size: 13px; }
-      .grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr); gap: 18px; }
+      .persona span { display: block; color: var(--muted); font-size: 12px; line-height: 1.36; }
+      .main { min-width: 0; padding: 26px; }
+      .top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 18px; }
+      .pill { border: 1px solid var(--line); border-radius: 999px; background: #fff; padding: 8px 12px; color: var(--muted); font-size: 13px; white-space: nowrap; }
+      .grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr); gap: 18px; align-items: start; }
       .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-      .panelHeader { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
-      .stage { position: relative; min-height: 560px; background: #eef2f7; padding: 28px; }
-      .mockPage { background: #fff; border: 1px solid var(--line); border-radius: 8px; min-height: 500px; padding: 22px; }
-      .mockNav { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 22px; }
-      .mockHero { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+      .panelHeader { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+      .stage { position: relative; min-height: 570px; background: #eef2f7; padding: 28px; }
+      .mockPage { background: #fff; border: 1px solid var(--line); border-radius: 8px; min-height: 510px; padding: 22px; box-shadow: 0 18px 45px rgba(17, 24, 39, .08); }
+      .mockNav { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 22px; color: var(--muted); font-size: 14px; }
+      .mockNav strong { color: var(--ink); }
+      .mockHero { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; }
+      .mockHero h2 { font-size: 30px; }
+      .benefits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+      .benefit { border: 1px solid var(--line); border-radius: 8px; padding: 10px; color: var(--muted); font-size: 13px; }
       .ctaRow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-      .btn { border: 0; border-radius: 8px; padding: 12px 14px; background: var(--accent); color: white; font-weight: 800; }
-      .btn.secondary { background: #e8eef5; color: var(--ink); }
+      .mockBtn { border: 0; border-radius: 8px; padding: 12px 14px; background: var(--accent); color: white; font-weight: 850; }
+      .mockBtn.secondary { background: #e8eef5; color: var(--ink); }
       .checkout { border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 10px; }
-      .field { border: 1px solid var(--line); border-radius: 8px; padding: 12px; color: var(--muted); }
-      .hotspot { position: absolute; width: 26px; height: 26px; border-radius: 999px; border: 2px solid #fff; background: var(--danger); box-shadow: 0 0 0 8px rgba(180,35,24,.18); }
-      .h1 { left: 63%; top: 32%; }
-      .h2 { left: 78%; top: 67%; }
-      .h3 { left: 35%; top: 45%; background: var(--gold); }
-      .scores { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 12px; }
-      .score { border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+      .mockField { border: 1px solid var(--line); border-radius: 8px; padding: 12px; color: var(--muted); font-size: 13px; }
+      .terms { font-size: 12px; margin: 0; }
+      .hotspot { position: absolute; width: 28px; height: 28px; border-radius: 999px; border: 2px solid #fff; background: var(--danger); box-shadow: 0 0 0 8px rgba(180, 35, 24, .18); transform: translate(-50%, -50%); }
+      .hotspot.medium { background: var(--gold); box-shadow: 0 0 0 8px rgba(183, 121, 31, .2); }
+      .hotspot.low { background: var(--blue); box-shadow: 0 0 0 8px rgba(29, 78, 216, .16); }
+      .scores { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 12px; }
+      .score { border: 1px solid var(--line); border-radius: 8px; padding: 10px; min-width: 0; }
       .score span { display: block; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
       .score strong { display: block; font-size: 24px; margin-top: 6px; }
       .findings { display: grid; gap: 10px; padding: 12px; }
       .finding { border: 1px solid var(--line); border-left: 4px solid var(--gold); border-radius: 8px; padding: 12px; }
       .finding.high { border-left-color: var(--danger); }
       .finding.low { border-left-color: var(--blue); }
-      .badge { border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
-      @media (max-width: 1000px) {
-        .shell, .grid, .mockHero, .scores { grid-template-columns: 1fr; }
+      .findingTop { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+      .finding p { margin: 8px 0 0; font-size: 13px; }
+      .badge { border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
+      .deck { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+      .card { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 12px; }
+      .card strong { display: block; font-size: 13px; }
+      .card span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+      @media (max-width: 1100px) {
+        .shell, .grid, .mockHero, .scores, .deck { grid-template-columns: 1fr; }
         .side { border-right: 0; border-bottom: 1px solid var(--line); }
       }
     </style>
@@ -75,74 +97,228 @@
         <div class="brand">
           <div class="mark">FL</div>
           <div>
-            <h1>FailureLab</h1>
-            <p>Behavioral Failure Simulation</p>
+            <h1>Faultline</h1>
+            <p class="subhead">Synthetic Human Testing</p>
           </div>
         </div>
-        <div class="label">Synthetic agents</div>
-        <div class="persona"><strong>Distracted single parent</strong><span>Scans quickly and mistrusts surprise charges.</span></div>
-        <div class="persona"><strong>Low-tech older adult</strong><span>Needs plain labels and visible reassurance.</span></div>
-        <div class="persona"><strong>Non-native English speaker</strong><span>Interprets vague actions literally.</span></div>
-        <div class="persona"><strong>Visually overwhelmed user</strong><span>Struggles with dense choices and competing CTAs.</span></div>
-        <div class="persona"><strong>Scammer / exploit seeker</strong><span>Probes refund, promo, and support loopholes.</span></div>
+        <div class="fieldStack">
+          <label class="label" for="scenario">Demo scenario</label>
+          <select id="scenario" class="select">
+            <option value="checkout">Ambiguous checkout upgrade</option>
+            <option value="signup">Dense AI tool signup</option>
+            <option value="refund">Refund and support exploit path</option>
+          </select>
+          <label class="label" for="notes">Target flow notes</label>
+          <textarea id="notes" class="textarea">Payment form includes Continue, Submit, auto-renewal text, refund caveats, promo/support code, and multiple secondary actions.</textarea>
+          <button id="run" class="button">Run synthetic agents</button>
+          <button id="export" class="button secondary">Export findings JSON</button>
+        </div>
+        <div>
+          <div class="label">Agent swarm</div>
+          <div class="personaGrid" id="personas"></div>
+        </div>
       </aside>
       <main class="main">
         <div class="top">
           <div>
-            <h2>Pre-release human chaos lab</h2>
-            <p>Static demo of the hackathon concept. The Next.js app adds live Playwright screenshots and Qwen-VL model analysis.</p>
+            <h2>Behavioral failure simulation before launch</h2>
+            <p class="subhead">Faultline simulates confusion, fatigue, mistrust, visual overload, and exploit-seeking against a software flow before real users hit it.</p>
           </div>
-          <div class="pill">Qwen-VL on AMD-ready architecture</div>
+          <div class="pill" id="mode">AMD/Qwen-VL ready demo</div>
         </div>
         <div class="grid">
           <section class="panel">
-            <div class="panelHeader"><h3>Visual confusion map</h3><span class="badge">checkout demo</span></div>
-            <div class="stage">
+            <div class="panelHeader">
+              <h3>Multimodal confusion map</h3>
+              <span class="badge" id="scenarioBadge">checkout demo</span>
+            </div>
+            <div class="stage" id="stage">
               <div class="mockPage">
-                <div class="mockNav"><strong>Acme Cloud</strong><span>Help · Pricing · Account</span></div>
+                <div class="mockNav"><strong id="mockBrand">Acme Cloud</strong><span>Help | Pricing | Account | Support</span></div>
                 <div class="mockHero">
                   <div>
-                    <h2>Upgrade your workspace</h2>
-                    <p>Get advanced collaboration, automation, security controls, audit trails, flexible billing, usage-based credits, and premium routing in one plan.</p>
-                    <div class="ctaRow">
-                      <button class="btn">Continue</button>
-                      <button class="btn secondary">Maybe later</button>
-                      <button class="btn secondary">Contact sales</button>
-                    </div>
+                    <h2 id="mockTitle">Upgrade your workspace</h2>
+                    <p id="mockCopy">Get advanced collaboration, automation, security controls, audit trails, flexible billing, usage-based credits, and premium routing in one plan.</p>
+                    <div class="benefits" id="benefits"></div>
+                    <div class="ctaRow" id="actions"></div>
                   </div>
-                  <div class="checkout">
-                    <strong>Payment setup</strong>
-                    <div class="field">Card number</div>
-                    <div class="field">Billing email</div>
-                    <div class="field">Promo or support code</div>
-                    <button class="btn">Submit</button>
-                    <p>Plan renews automatically. Refunds may be available under certain conditions.</p>
-                  </div>
+                  <div class="checkout" id="formBox"></div>
                 </div>
               </div>
-              <span class="hotspot h1" title="Continue reads like final payment confirmation"></span>
-              <span class="hotspot h2" title="Refund wording creates exploit and trust ambiguity"></span>
-              <span class="hotspot h3" title="Too many competing actions increase overload"></span>
             </div>
           </section>
           <aside class="panel">
-            <div class="panelHeader"><h3>Behavioral risk findings</h3><span class="badge">demo run</span></div>
-            <div class="scores">
-              <div class="score"><span>Confusion</span><strong>76</strong></div>
-              <div class="score"><span>Trust risk</span><strong>81</strong></div>
-              <div class="score"><span>Abandon</span><strong>68</strong></div>
-              <div class="score"><span>Exploit</span><strong>59</strong></div>
-              <div class="score"><span>Overload</span><strong>72</strong></div>
+            <div class="panelHeader">
+              <h3>Agent findings</h3>
+              <span class="badge" id="runBadge">ready</span>
             </div>
-            <div class="findings">
-              <article class="finding high"><h4>Ambiguous action wording</h4><p>Distracted and low-tech users interpret “Continue” as a final payment action.</p><p><strong>Fix:</strong> Rename to “Review plan” or “Continue to payment setup.”</p></article>
-              <article class="finding high"><h4>Trust collapse risk</h4><p>Auto-renewal and conditional refund language appears after payment fields, increasing anxiety.</p><p><strong>Fix:</strong> Move renewal and refund terms before the form in plain language.</p></article>
-              <article class="finding"><h4>Cognitive overload</h4><p>Three parallel calls to action compete with the checkout form.</p><p><strong>Fix:</strong> Make one primary path and demote secondary actions.</p></article>
-              <article class="finding low"><h4>Exploit probing</h4><p>Scammer persona targets promo/support code and vague refund policy.</p><p><strong>Fix:</strong> Add rate limits, audit logs, and explicit eligibility checks.</p></article>
-            </div>
+            <div class="scores" id="scores"></div>
+            <div class="findings" id="findings"></div>
           </aside>
+        </div>
+        <div class="deck">
+          <div class="card"><strong>Hackathon track</strong><span>AI Agents & Agentic Workflows, with Vision & Multimodal AI through screenshot/layout reasoning.</span></div>
+          <div class="card"><strong>AMD usage</strong><span>Run Qwen-VL/vLLM on AMD Developer Cloud MI300X and batch thousands of persona simulations.</span></div>
+          <div class="card"><strong>Qwen usage</strong><span>Qwen reasons over persona goals; Qwen-VL inspects screenshot hierarchy, forms, and labels.</span></div>
+          <div class="card"><strong>Submission angle</strong><span>Pre-release human failure simulation for UX, trust, accessibility, conversion, and abuse risk.</span></div>
         </div>
       </main>
     </div>
+    <script>
+      const personas = [
+        ["Distracted single parent", "Time-constrained, scans quickly, fears surprise charges.", "anxious"],
+        ["Low-tech older adult", "Careful reader, low confidence, worried about irreversible mistakes.", "confused"],
+        ["Impatient shopper", "Price-sensitive, friction-intolerant, abandons slow flows.", "frustrated"],
+        ["Non-native English speaker", "Literal interpretation, sensitive to idioms and vague labels.", "confused"],
+        ["Visually overwhelmed user", "Struggles with clutter, low contrast, and competing actions.", "frustrated"],
+        ["Scammer / exploit seeker", "Probes refund, support, promo, and authorization loopholes.", "mistrustful"]
+      ];
+      const scenarios = {
+        checkout: {
+          badge: "checkout demo",
+          brand: "Acme Cloud",
+          title: "Upgrade your workspace",
+          copy: "Get advanced collaboration, automation, security controls, audit trails, flexible billing, usage-based credits, and premium routing in one plan.",
+          benefits: ["Advanced routing", "Audit trails", "Usage credits", "Premium support"],
+          actions: ["Continue", "Maybe later", "Contact sales"],
+          fields: ["Card number", "Billing email", "Promo or support code", "Submit"],
+          terms: "Plan renews automatically. Refunds may be available under certain conditions.",
+          findings: [
+            ["Ambiguous action wording", "Distracted and low-tech agents interpret Continue as final payment confirmation.", "Rename to Review plan or Continue to payment setup.", "high", 64, 44],
+            ["Trust collapse risk", "Auto-renewal and conditional refund language appears after payment fields.", "Move renewal and refund terms before the form in plain language.", "high", 79, 73],
+            ["Cognitive overload", "Three calls to action compete with payment setup.", "Make one primary path and demote secondary actions.", "medium", 38, 54],
+            ["Exploit probing", "Scammer persona targets promo/support code and vague refund policy.", "Add rate limits, audit logs, and explicit eligibility checks.", "low", 78, 60]
+          ],
+          scores: [76, 81, 68, 59, 72]
+        },
+        signup: {
+          badge: "signup demo",
+          brand: "ForgeBoard AI",
+          title: "Create your automation workspace",
+          copy: "Start with templates, invite teammates, connect production systems, choose billing mode, configure permissions, and enable AI actions.",
+          benefits: ["Team invites", "Billing setup", "AI permissions", "Production connectors"],
+          actions: ["Start", "Use template", "Skip setup", "Invite team"],
+          fields: ["Workspace name", "Company role", "Permission mode", "Create account"],
+          terms: "Admins can enable AI actions that modify connected systems.",
+          findings: [
+            ["Too many first-run decisions", "New users face workspace, billing, permissions, connectors, and team setup at once.", "Split onboarding into progressive steps with visible progress.", "high", 43, 42],
+            ["Unsafe permission comprehension", "Low-tech and distracted agents do not understand AI actions that modify systems.", "Add a plain-language permission preview before enabling actions.", "high", 77, 72],
+            ["Vague primary action", "Start does not explain whether it creates an account or configures production access.", "Use Create workspace or Review permissions.", "medium", 35, 58]
+          ],
+          scores: [84, 69, 74, 38, 86]
+        },
+        refund: {
+          badge: "support demo",
+          brand: "MarketPilot",
+          title: "Request billing support",
+          copy: "Tell us what happened, add order details, choose urgency, attach proof, and select refund preference. Most requests are reviewed automatically.",
+          benefits: ["Automated review", "Urgent routing", "Credit option", "Appeal path"],
+          actions: ["Continue", "Escalate", "Apply credit"],
+          fields: ["Order ID", "Reason", "Proof link", "Preferred refund"],
+          terms: "Exceptions may be approved by support based on account history.",
+          findings: [
+            ["Social engineering path", "Scammer agent identifies escalation and exception language as a manipulation target.", "Require structured eligibility checks before manual support escalation.", "high", 67, 45],
+            ["Refund policy ambiguity", "Legitimate users cannot tell whether credit, refund, or appeal is final.", "State outcomes and review order in a single summary before submission.", "medium", 78, 72],
+            ["Evidence weakness", "Proof link field invites unverifiable external evidence.", "Require upload validation and mark unsupported evidence types.", "high", 77, 60]
+          ],
+          scores: [59, 72, 52, 88, 46]
+        }
+      };
+      const personaBox = document.getElementById("personas");
+      const stage = document.getElementById("stage");
+      const findingsBox = document.getElementById("findings");
+      const scoresBox = document.getElementById("scores");
+      const scenarioSelect = document.getElementById("scenario");
+      const runButton = document.getElementById("run");
+      const exportButton = document.getElementById("export");
+      let latest = null;
+      personaBox.innerHTML = personas.map(([name, desc]) => `<div class="persona"><strong>${name}</strong><span>${desc}</span></div>`).join("");
+      function renderScenario() {
+        const data = scenarios[scenarioSelect.value];
+        document.getElementById("scenarioBadge").textContent = data.badge;
+        document.getElementById("mockBrand").textContent = data.brand;
+        document.getElementById("mockTitle").textContent = data.title;
+        document.getElementById("mockCopy").textContent = data.copy;
+        document.getElementById("benefits").innerHTML = data.benefits.map(item => `<div class="benefit">${item}</div>`).join("");
+        document.getElementById("actions").innerHTML = data.actions.map((item, index) => `<button class="mockBtn ${index ? "secondary" : ""}">${item}</button>`).join("");
+        document.getElementById("formBox").innerHTML = `<strong>Flow step</strong>${data.fields.map((item, index) => index === data.fields.length - 1 ? `<button class="mockBtn">${item}</button>` : `<div class="mockField">${item}</div>`).join("")}<p class="terms">${data.terms}</p>`;
+        document.getElementById("notes").value = `${data.copy} ${data.terms}`;
+        clearHotspots();
+        renderFindings(data, false);
+      }
+      function clearHotspots() {
+        stage.querySelectorAll(".hotspot").forEach(node => node.remove());
+      }
+      function renderFindings(data, active) {
+        latest = {
+          project: "Faultline",
+          scenario: scenarioSelect.value,
+          modelPath: "Qwen/Qwen2.5-VL on AMD Developer Cloud via vLLM",
+          personas: personas.map(([name, behavior, emotion]) => ({ name, behavior, emotion })),
+          scores: {
+            confusion: data.scores[0],
+            trustRisk: data.scores[1],
+            abandonment: data.scores[2],
+            exploitability: data.scores[3],
+            visualOverload: data.scores[4]
+          },
+          findings: data.findings.map(([theme, evidence, recommendation, severity, x, y], index) => ({
+            persona: personas[index % personas.length][0],
+            emotion: personas[index % personas.length][2],
+            theme,
+            evidence,
+            recommendation,
+            severity,
+            hotspot: { x, y }
+          }))
+        };
+        const scoreLabels = ["Confusion", "Trust risk", "Abandon", "Exploit", "Overload"];
+        scoresBox.innerHTML = data.scores.map((value, index) => `<div class="score"><span>${scoreLabels[index]}</span><strong>${value}</strong></div>`).join("");
+        findingsBox.innerHTML = latest.findings.map(item => `
+          <article class="finding ${item.severity}">
+            <div class="findingTop"><h4>${item.theme}</h4><span class="badge">${item.severity}</span></div>
+            <p><strong>${item.persona}</strong> became ${item.emotion}. ${item.evidence}</p>
+            <p><strong>Fix:</strong> ${item.recommendation}</p>
+          </article>
+        `).join("");
+        document.getElementById("runBadge").textContent = active ? "completed" : "preview";
+      }
+      function runAgents() {
+        runButton.disabled = true;
+        runButton.textContent = "Simulating agents";
+        document.getElementById("runBadge").textContent = "running";
+        clearHotspots();
+        setTimeout(() => {
+          const data = scenarios[scenarioSelect.value];
+          data.findings.forEach((finding) => {
+            const severity = finding[3];
+            const hotspot = document.createElement("span");
+            hotspot.className = `hotspot ${severity === "high" ? "" : severity}`;
+            hotspot.style.left = `${finding[4]}%`;
+            hotspot.style.top = `${finding[5]}%`;
+            hotspot.title = finding[0];
+            stage.appendChild(hotspot);
+          });
+          renderFindings(data, true);
+          runButton.disabled = false;
+          runButton.textContent = "Run synthetic agents";
+          document.getElementById("mode").textContent = "6 agents | screenshot reasoning | AMD-ready";
+        }, 650);
+      }
+      function exportJson() {
+        if (!latest) renderFindings(scenarios[scenarioSelect.value], false);
+        const blob = new Blob([JSON.stringify(latest, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `faultline-${scenarioSelect.value}-findings.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+      scenarioSelect.addEventListener("change", renderScenario);
+      runButton.addEventListener("click", runAgents);
+      exportButton.addEventListener("click", exportJson);
+      renderScenario();
+    </script>
   </body>
 </html>

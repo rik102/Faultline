@@ -1,17 +1,18 @@
-# FailureLab
+# Faultline
 
 Synthetic Human Testing for pre-release UX, trust, accessibility, and abuse-risk discovery.
 
-FailureLab is an AMD hackathon project for the AI Agents & Agentic Workflows track, with a legitimate Vision & Multimodal AI angle. It simulates psychologically distinct user agents against a live web flow, captures a screenshot with Playwright, and asks a multimodal model such as Qwen-VL to identify where users become confused, anxious, mistrustful, overloaded, or adversarial.
+Faultline is an AMD hackathon project for the AI Agents & Agentic Workflows track, with a legitimate Vision & Multimodal AI angle. It simulates psychologically distinct user agents against a live web flow, captures a screenshot with Playwright, and asks a multimodal model such as Qwen-VL to identify where users become confused, anxious, mistrustful, overloaded, or adversarial.
 
 ## Why it matters
 
-Most teams discover UX failures after launch through analytics, session replay, support tickets, and customer complaints. FailureLab moves that learning earlier by running synthetic behavioral simulations before real users hit the broken flow.
+Most teams discover UX failures after launch through analytics, session replay, support tickets, and customer complaints. Faultline moves that learning earlier by running synthetic behavioral simulations before real users hit the broken flow.
 
 This is not classic QA. The question is not only whether the button works. The question is whether stressed, distracted, low-tech, non-native, visually overloaded, or adversarial users understand and trust the flow.
 
 ## Features
 
+- No-install interactive pitch demo in `demo.html`.
 - Live URL capture with Playwright.
 - Synthetic persona agents for distracted, low-tech, impatient, non-native, visually overloaded, and adversarial users.
 - Multimodal screenshot reasoning through any OpenAI-compatible endpoint.
@@ -20,7 +21,18 @@ This is not classic QA. The question is not only whether the button works. The q
 - Trust, confusion, abandonment, exploitability, and visual overload scoring.
 - Heuristic fallback mode when no model endpoint is configured.
 
-## Run locally
+## Run the no-install demo
+
+Open `demo.html` directly in a browser, or run:
+
+```bash
+chmod +x scripts/serve-demo.sh
+./scripts/serve-demo.sh
+```
+
+Then open `http://localhost:8080/demo.html`.
+
+## Run the Next.js app
 
 ```bash
 npm install
@@ -59,8 +71,8 @@ AMD angle: run many persona simulations in parallel on AMD Developer Cloud GPUs,
 
 ## Submission title
 
-FailureLab: Synthetic Human Testing for Behavioral Failure Simulation
+Faultline: Synthetic Human Testing for Behavioral Failure Simulation
 
 ## Short description
 
-FailureLab uses multimodal AI agents to simulate realistic human confusion, mistrust, fatigue, and adversarial behavior against software flows before launch.
+Faultline uses multimodal AI agents to simulate realistic human confusion, mistrust, fatigue, and adversarial behavior against software flows before launch.
