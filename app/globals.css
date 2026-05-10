@@ -1,14 +1,17 @@
 :root {
   color-scheme: light;
-  --ink: #111827;
-  --muted: #5b6472;
-  --line: #d9dee7;
-  --paper: #f7f8fb;
+  --ink: #171a22;
+  --muted: #687180;
+  --line: #e2e6ee;
+  --paper: #f5f6f8;
   --panel: #ffffff;
-  --accent: #0f766e;
-  --accent-2: #b42318;
-  --gold: #b7791f;
-  --blue: #1d4ed8;
+  --accent: #0a7c72;
+  --accent-soft: #edf8f6;
+  --accent-2: #c12b22;
+  --gold: #a76b18;
+  --blue: #2563eb;
+  --shadow: 0 18px 45px rgba(18, 24, 40, 0.07);
+  --shadow-soft: 0 8px 24px rgba(18, 24, 40, 0.055);
 }
 
 * {
@@ -17,29 +20,39 @@
 
 body {
   margin: 0;
-  background: var(--paper);
+  background:
+    radial-gradient(circle at top left, rgba(10, 124, 114, 0.08), transparent 360px),
+    var(--paper);
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
+}
+
+button {
+  color: inherit;
 }
 
 .shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-columns: 320px minmax(0, 1fr);
 }
 
 .sidebar {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(18px);
   border-right: 1px solid var(--line);
-  padding: 24px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 20px;
+  min-width: 0;
 }
 
 .brand {
@@ -49,14 +62,15 @@ input {
 }
 
 .mark {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
   display: grid;
   place-items: center;
   color: #fff;
-  background: var(--accent);
+  background: linear-gradient(145deg, #0a8f83, #07665f);
   font-weight: 800;
+  box-shadow: 0 10px 24px rgba(10, 124, 114, 0.22);
 }
 
 .brand h1 {
@@ -79,33 +93,49 @@ input {
 }
 
 .label {
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 11px;
+  color: #737d8d;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .input {
   width: 100%;
+  min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 12px;
+  padding: 12px 13px;
   color: var(--ink);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  outline: none;
+}
+
+.input:focus {
+  border-color: rgba(10, 124, 114, 0.55);
+  box-shadow: 0 0 0 4px rgba(10, 124, 114, 0.1);
 }
 
 .button {
   border: 0;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 12px 14px;
   color: #fff;
-  background: var(--accent);
+  background: linear-gradient(180deg, #138c80, #08766c);
   font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-shadow: 0 12px 24px rgba(10, 124, 114, 0.18);
+  transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(10, 124, 114, 0.22);
 }
 
 .button:disabled {
@@ -116,9 +146,10 @@ input {
 .demoNote,
 .amdBox {
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #f8fbfb;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
   padding: 12px;
+  box-shadow: var(--shadow-soft);
 }
 
 .demoNote {
@@ -143,7 +174,7 @@ input {
 .noteIcon {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: 9px;
   display: grid;
   place-items: center;
   color: var(--accent);
@@ -162,8 +193,8 @@ input {
   margin-top: 10px;
   overflow-wrap: anywhere;
   border: 1px solid var(--line);
-  border-radius: 6px;
-  background: #fff;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.76);
   padding: 8px;
   color: var(--ink);
   font-size: 12px;
@@ -172,31 +203,38 @@ input {
 .personaList {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .persona {
   border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 12px;
+  padding: 11px;
+  min-width: 0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .targetButton {
   width: 100%;
+  max-width: 100%;
   cursor: pointer;
   text-align: left;
-  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+  overflow: hidden;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
 }
 
 .targetButton:hover {
   border-color: rgba(15, 118, 110, 0.45);
-  background: #f7fbfa;
+  background: #fbfefd;
   transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
 }
 
 .targetButton.selected {
   border-color: rgba(15, 118, 110, 0.65);
   background: #edf8f6;
+  box-shadow: 0 0 0 4px rgba(10, 124, 114, 0.06);
 }
 
 .persona strong {
@@ -210,6 +248,7 @@ input {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .persona em {
@@ -224,7 +263,7 @@ input {
 
 .main {
   min-width: 0;
-  padding: 26px;
+  padding: 30px;
 }
 
 .toolbar {
@@ -237,7 +276,8 @@ input {
 
 .toolbar h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: 30px;
+  letter-spacing: 0;
 }
 
 .status {
@@ -246,7 +286,7 @@ input {
   gap: 8px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.82);
   padding: 8px 12px;
   color: var(--muted);
   font-size: 13px;
@@ -255,14 +295,14 @@ input {
 .runStrip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 18px;
 }
 
 .step {
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
   padding: 12px;
   display: flex;
   align-items: center;
@@ -273,7 +313,7 @@ input {
 .step.active {
   border-color: rgba(15, 118, 110, 0.35);
   color: var(--accent);
-  background: #f7fbfa;
+  background: rgba(237, 248, 246, 0.9);
 }
 
 .step span {
@@ -293,7 +333,7 @@ input {
 
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  grid-template-columns: minmax(0, 1.32fr) minmax(360px, 0.68fr);
   gap: 18px;
   align-items: start;
 }
@@ -301,8 +341,9 @@ input {
 .panel {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .panelHeader {
@@ -329,7 +370,7 @@ input {
 .screenWrap {
   position: relative;
   min-height: 460px;
-  background: #e9edf3;
+  background: #edf1f6;
 }
 
 .screenWrap img {
@@ -392,8 +433,9 @@ input {
 
 .score {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 13px;
   padding: 10px;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .score span {
@@ -431,8 +473,9 @@ input {
 .finding {
   border: 1px solid var(--line);
   border-left: 4px solid var(--gold);
-  border-radius: 8px;
+  border-radius: 13px;
   padding: 12px;
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .finding.high {
@@ -445,7 +488,7 @@ input {
 
 .interactionCard {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 13px;
   background: #fbfcfe;
   padding: 12px;
 }
@@ -515,6 +558,7 @@ input {
   text-transform: uppercase;
   font-weight: 800;
   white-space: nowrap;
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .error {
@@ -525,7 +569,7 @@ input {
 
 .emptyBrief {
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 13px;
   padding: 12px;
   background: #fbfcfe;
 }
@@ -561,6 +605,7 @@ input {
   .sidebar {
     border-right: 0;
     border-bottom: 1px solid var(--line);
+    padding: 20px;
   }
 
   .grid,
@@ -568,11 +613,22 @@ input {
   .runStrip {
     grid-template-columns: 1fr;
   }
+
+  .main {
+    padding: 22px;
+  }
+
+  .toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 .demoFlow {
   min-height: 100vh;
-  background: #f4f7fb;
+  background:
+    radial-gradient(circle at top left, rgba(10, 124, 114, 0.08), transparent 360px),
+    #f5f6f8;
   color: var(--ink);
   padding: 48px;
 }
@@ -617,8 +673,8 @@ input {
 
 .trustStack span {
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.82);
   padding: 10px 12px;
   display: flex;
   gap: 8px;
@@ -638,9 +694,10 @@ input {
 
 .checkoutPanel {
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
   padding: 22px;
+  box-shadow: var(--shadow-soft);
 }
 
 .checkoutHeader {
@@ -685,8 +742,8 @@ input {
 .checkoutPanel select {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
   padding: 12px;
   color: var(--ink);
   font: inherit;
@@ -703,7 +760,7 @@ input {
 .choiceRow button,
 .fullWidthAction {
   border: 0;
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--accent);
   color: #fff;
   padding: 12px 14px;
@@ -713,7 +770,7 @@ input {
 
 .choiceRow .secondaryAction {
   border: 1px solid var(--line);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.86);
   color: var(--ink);
 }
 
