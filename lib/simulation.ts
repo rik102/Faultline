@@ -321,6 +321,14 @@ async function capturePage(targetUrl: string): Promise<{ screenshot: string; fac
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   const timeout = Number(process.env.PLAYWRIGHT_TIMEOUT_MS ?? 20000);
+  const pageErrors: string[] = [];
+
+  page.on("pageerror", (error) => {
+    pageErrors.push(error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") pageErrors.push(message.text());
+  });
 
   try {
     await page.goto(targetUrl, { waitUntil: "networkidle", timeout });
@@ -329,6 +337,28 @@ async function capturePage(targetUrl: string): Promise<{ screenshot: string; fac
       throw error;
     }
     await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout });
+  }
+
+  const hasRuntimeOverlay = async () =>
+    page.evaluate(() => {
+      const bodyText = document.body?.innerText ?? "";
+      return (
+        bodyText.includes("webpack modules is not a function") ||
+        bodyText.includes("Unhandled Runtime Error") ||
+        Boolean(document.querySelector("nextjs-portal"))
+      );
+    });
+
+  const hasWebpackRuntimeError = () => pageErrors.some((error) => error.toLowerCase().includes("webpack"));
+
+  if ((await hasRuntimeOverlay()) || hasWebpackRuntimeError()) {
+    pageErrors.length = 0;
+    await page.reload({ waitUntil: "networkidle", timeout }).catch(() => page.reload({ waitUntil: "domcontentloaded", timeout }));
+  }
+
+  if ((await hasRuntimeOverlay()) || hasWebpackRuntimeError()) {
+    await browser.close();
+    throw new Error("Target page is showing a Next.js runtime error overlay. Restart the local dev server and rerun the simulation.");
   }
 
   const facts = await page.evaluate(() => {

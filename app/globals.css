@@ -382,6 +382,58 @@ button {
   display: block;
 }
 
+.mapListHeader {
+  border-top: 1px solid var(--line);
+  padding: 12px 12px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mapList {
+  margin: 0;
+  padding: 12px;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.mapList li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+
+.mapList span {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #07110d;
+  background: var(--accent);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mapList strong {
+  display: block;
+  font-size: 13px;
+}
+
+.mapList p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .empty {
   min-height: 460px;
   display: grid;
@@ -389,51 +441,6 @@ button {
   color: var(--muted);
   text-align: center;
   padding: 32px;
-}
-
-.hotspot {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  border: 2px solid #07110d;
-  box-shadow: none;
-  background: var(--accent);
-  color: #07110d;
-  display: grid;
-  place-items: center;
-  z-index: 2;
-}
-
-.hotspot b {
-  font-size: 12px;
-  line-height: 1;
-}
-
-.hotspot em {
-  position: absolute;
-  left: 22px;
-  top: calc(22px + var(--label-shift-y, 0px));
-  max-width: 180px;
-  min-width: 104px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #111114;
-  color: var(--ink);
-  padding: 6px 8px;
-  box-shadow: none;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 800;
-  line-height: 1.25;
-  text-align: left;
-  text-transform: none;
-}
-
-.hotspot.leftLabel em {
-  left: auto;
-  right: 22px;
 }
 
 .scoreGrid {

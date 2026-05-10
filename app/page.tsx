@@ -1,7 +1,7 @@
 "use client";
 
 import { Activity, BrainCircuit, CheckCircle2, Cpu, ExternalLink, Play, ShieldAlert } from "lucide-react";
-import { CSSProperties, FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import { personas } from "@/lib/personas";
 import type { SimulationResult } from "@/lib/simulation";
 
@@ -154,23 +154,18 @@ export default function Home() {
               {result?.screenshot ? (
                 <>
                   <img src={result.screenshot} alt="Analyzed page screenshot" />
-                  {result.findings.map((finding, index) => (
-                    <span
-                      className={`hotspot ${finding.x > 68 ? "leftLabel" : ""}`}
-                      key={`${finding.persona}-${index}`}
-                      title={`${finding.persona}: ${finding.theme}`}
-                      style={
-                        {
-                          left: `${finding.x}%`,
-                          top: `${finding.y}%`,
-                          "--label-shift-y": `${(index % 4) * 18}px`
-                        } as CSSProperties
-                      }
-                    >
-                      <b>{index + 1}</b>
-                      <em>{finding.theme}</em>
-                    </span>
-                  ))}
+                  <div className="mapListHeader">Map findings</div>
+                  <ol className="mapList" aria-label="Visual map findings">
+                    {result.findings.map((finding, index) => (
+                      <li key={`${finding.persona}-${index}`}>
+                        <span>{index + 1}</span>
+                        <div>
+                          <strong>{finding.theme}</strong>
+                          <p>{finding.evidence}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
                 </>
               ) : (
                 <div className="empty">
