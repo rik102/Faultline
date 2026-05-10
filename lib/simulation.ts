@@ -44,7 +44,15 @@ type PageFacts = {
   inputs: string[];
   headings: string[];
   textSample: string;
+  anchors: ElementAnchor[];
   interaction: InteractionFacts;
+};
+
+type ElementAnchor = {
+  role: "button" | "input" | "link" | "heading" | "text";
+  label: string;
+  x: number;
+  y: number;
 };
 
 type InteractionFacts = {
@@ -229,6 +237,86 @@ function fallbackSummary(facts: PageFacts, findings: SimulationFinding[]) {
     .join(", ")}.`;
 }
 
+function textTokens(value: string) {
+  return new Set(
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .split(/\s+/)
+      .filter((token) => token.length > 2)
+  );
+}
+
+function anchorIntent(finding: SimulationFinding) {
+  const text = `${finding.theme} ${finding.evidence} ${finding.recommendation}`.toLowerCase();
+  const wantsLiteralAction = /literal-language|generic continue|vague/.test(text);
+  const wantsPolicy = /policy|refund|authorization|support|boundary|irreversible/.test(text);
+  const wantsBilling = !wantsLiteralAction && !wantsPolicy && /billing|charge|subscription|renewal|price|payment|pay|cost|card/.test(text);
+  return {
+    wantsForm: !wantsBilling && /form|field|input|card|email|company|control/.test(text),
+    wantsBilling,
+    wantsAction: wantsLiteralAction || /action|button|continue|submit|confirm|start|trial|choice|path/.test(text),
+    wantsPolicy,
+    wantsDensity: /overload|density|clutter|competing|hierarchy|simultaneous/.test(text)
+  };
+}
+
+function anchorFindings(findings: SimulationFinding[], facts: PageFacts) {
+  if (!facts.anchors.length) return findings;
+
+  const used = new Set<number>();
+  return findings.map((finding, findingIndex) => {
+    const findingTokens = textTokens(`${finding.theme} ${finding.evidence} ${finding.recommendation}`);
+    const intent = anchorIntent(finding);
+
+    let bestIndex = -1;
+    let bestScore = -Infinity;
+
+    facts.anchors.forEach((anchor, anchorIndex) => {
+      const anchorTokens = textTokens(anchor.label);
+      let score = 0;
+
+      findingTokens.forEach((token) => {
+        if (anchorTokens.has(token)) score += 3;
+      });
+
+      if (intent.wantsForm && anchor.role === "input") score += 32;
+      if (intent.wantsBilling && /billing|trial|renewal|payment|pay|card|cost|charge|subscription/.test(anchor.label.toLowerCase())) {
+        score += anchor.role === "text" || anchor.role === "heading" ? 22 : 14;
+        if (anchor.x > 55) score += 12;
+        if (/renewal|month|cost|charge|payment|subscription/.test(anchor.label.toLowerCase())) score += 10;
+      }
+      if (intent.wantsAction && !intent.wantsForm && anchor.role === "button") score += 12;
+      if (intent.wantsPolicy && /policy|refund|support|cancel|authorization|confirm|activate/.test(anchor.label.toLowerCase())) {
+        score += anchor.role === "text" || anchor.role === "heading" ? 22 : 12;
+        if (anchor.x > 55) score += 10;
+        if (/refund|policy|authorization|validation/.test(anchor.label.toLowerCase())) score += 10;
+      }
+      if (intent.wantsDensity && (anchor.role === "button" || anchor.role === "heading" || anchor.role === "text")) score += 6;
+      if (anchor.role === "heading" && /review|confirm|checkout|complete/.test(anchor.label.toLowerCase())) score += 4;
+      if (used.has(anchorIndex)) score -= 4;
+
+      const originalDistance = Math.hypot(anchor.x - finding.x, anchor.y - finding.y);
+      score -= originalDistance / 20;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestIndex = anchorIndex;
+      }
+    });
+
+    if (bestIndex < 0 || bestScore < 1) return finding;
+    used.add(bestIndex);
+    const anchor = facts.anchors[bestIndex];
+
+    return {
+      ...finding,
+      x: anchor.x,
+      y: anchor.y
+    };
+  });
+}
+
 async function capturePage(targetUrl: string): Promise<{ screenshot: string; facts: PageFacts }> {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
@@ -247,6 +335,25 @@ async function capturePage(targetUrl: string): Promise<{ screenshot: string; fac
     const visibleText = (element: Element | null) =>
       (element?.textContent ?? "").replace(/\s+/g, " ").trim();
 
+    const labelForInput = (input: Element) => {
+      const element = input as HTMLInputElement;
+      const explicitLabel = element.id
+        ? document.querySelector(`label[for="${CSS.escape(element.id)}"]`)?.textContent
+        : "";
+      const parentLabel = element.closest("label")?.textContent;
+      return (
+        explicitLabel ||
+        parentLabel ||
+        element.placeholder ||
+        element.name ||
+        element.id ||
+        element.type ||
+        "Input field"
+      )
+        .replace(/\s+/g, " ")
+        .trim();
+    };
+
     const take = (selector: string, limit = 30) =>
       Array.from(document.querySelectorAll(selector))
         .map((element) => visibleText(element))
@@ -258,11 +365,52 @@ async function capturePage(targetUrl: string): Promise<{ screenshot: string; fac
     const inputs = Array.from(document.querySelectorAll("input, textarea, select"))
       .map((input) => {
         const element = input as HTMLInputElement;
-        return element.placeholder || element.name || element.id || element.type;
+        return labelForInput(element);
       })
       .filter(Boolean)
       .slice(0, 30);
     const headings = take("h1, h2, h3", 16);
+
+    const anchorCandidates = Array.from(
+      document.querySelectorAll("button, [role='button'], input, textarea, select, a, h1, h2, h3, label, p, li, dt, dd, strong, small, span")
+    );
+    const seenAnchors = new Set<string>();
+    const anchors: ElementAnchor[] = anchorCandidates
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        if (rect.width < 8 || rect.height < 8 || rect.bottom < 0 || rect.right < 0) return null;
+        if (rect.top > window.innerHeight || rect.left > window.innerWidth) return null;
+        const style = window.getComputedStyle(element);
+        if (style.visibility === "hidden" || style.display === "none" || Number(style.opacity) === 0) return null;
+
+        const tagName = element.tagName.toLowerCase();
+        const role: ElementAnchor["role"] =
+          tagName === "button" || element.getAttribute("role") === "button" || (element as HTMLInputElement).type === "submit"
+            ? "button"
+            : tagName === "input" || tagName === "textarea" || tagName === "select"
+              ? "input"
+              : tagName === "a"
+                ? "link"
+                : /^h[1-3]$/.test(tagName)
+                  ? "heading"
+                  : "text";
+        const label = role === "input" ? labelForInput(element) : visibleText(element);
+        if (!label || label.length < 3) return null;
+        const normalizedLabel = label.slice(0, 140);
+        const x = Math.round(((rect.left + rect.width / 2) / window.innerWidth) * 100);
+        const y = Math.round(((rect.top + rect.height / 2) / window.innerHeight) * 100);
+        const key = `${role}:${normalizedLabel.toLowerCase()}:${x}:${y}`;
+        if (seenAnchors.has(key)) return null;
+        seenAnchors.add(key);
+        return {
+          role,
+          label: normalizedLabel,
+          x: Math.max(3, Math.min(97, x)),
+          y: Math.max(3, Math.min(97, y))
+        };
+      })
+      .filter((anchor): anchor is ElementAnchor => Boolean(anchor))
+      .slice(0, 80);
 
     const repeatedLabels = (labels: string[]) => {
       const counts = new Map<string, number>();
@@ -293,6 +441,7 @@ async function capturePage(targetUrl: string): Promise<{ screenshot: string; fac
       links,
       inputs,
       headings,
+      anchors,
       textSample: visibleText(document.body).slice(0, 2400),
       interaction: {
         buttonLabels: buttons,
@@ -408,6 +557,8 @@ export async function runSimulation(targetUrl: string): Promise<SimulationResult
   } catch (error) {
     console.warn("Falling back to heuristic simulation", error);
   }
+
+  findings = anchorFindings(findings, facts);
 
   const high = findings.filter((finding) => finding.severity === "high").length;
   const medium = findings.filter((finding) => finding.severity === "medium").length;
