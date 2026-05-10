@@ -48,7 +48,7 @@ button {
 .shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: 280px minmax(0, 1fr);
   background: var(--paper);
 }
 
@@ -70,20 +70,20 @@ button {
 }
 
 .mark {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   display: grid;
   place-items: center;
   background: var(--accent);
   color: #07110d;
   font-weight: 900;
-  box-shadow: 0 0 18px rgba(0, 255, 159, 0.34);
+  box-shadow: none;
 }
 
 .brand h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1.05;
 }
 
@@ -101,11 +101,9 @@ button {
 }
 
 .label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--sidebar-muted);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
 }
 
 .input {
@@ -122,7 +120,7 @@ button {
 
 .input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0, 255, 159, 0.12);
+  box-shadow: none;
 }
 
 .input::placeholder {
@@ -141,13 +139,12 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 0 18px rgba(0, 255, 159, 0.22);
-  transition: background 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+  box-shadow: none;
+  transition: background 140ms ease, opacity 140ms ease;
 }
 
 .button:hover {
   background: #35ffb2;
-  box-shadow: 0 0 24px rgba(0, 255, 159, 0.28);
 }
 
 .button:disabled {
@@ -205,7 +202,7 @@ button {
   border-radius: 9px;
   padding: 11px;
   min-width: 0;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 
 .targetButton {
@@ -215,7 +212,7 @@ button {
   text-align: left;
   overflow: hidden;
   position: relative;
-  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  transition: border-color 140ms ease, background 140ms ease;
 }
 
 .targetButton::before {
@@ -236,7 +233,7 @@ button {
 .targetButton.selected {
   border-color: var(--accent);
   background: #17231d;
-  box-shadow: 0 0 0 3px rgba(0, 255, 159, 0.08);
+  box-shadow: none;
 }
 
 .targetButton.selected::before,
@@ -265,7 +262,6 @@ button {
   font-size: 11px;
   font-style: normal;
   font-weight: 800;
-  text-transform: uppercase;
 }
 
 .main {
@@ -284,8 +280,7 @@ button {
 
 .toolbar h2 {
   margin: 0;
-  font-size: 30px;
-  letter-spacing: 0;
+  font-size: 22px;
   color: var(--ink);
 }
 
@@ -328,9 +323,8 @@ button {
 .step span {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  text-transform: uppercase;
 }
 
 .step strong {
@@ -404,7 +398,7 @@ button {
   border-radius: 50%;
   transform: translate(-50%, -50%);
   border: 2px solid #07110d;
-  box-shadow: 0 0 0 6px rgba(0, 255, 159, 0.16), 0 0 18px rgba(0, 255, 159, 0.28);
+  box-shadow: none;
   background: var(--accent);
   color: #07110d;
   display: grid;
@@ -467,7 +461,6 @@ button {
   color: var(--muted);
   font-size: 12px;
   font-weight: 800;
-  text-transform: uppercase;
 }
 
 .resultMeta strong {
@@ -511,8 +504,7 @@ button {
 .score span {
   display: block;
   color: var(--muted);
-  font-size: 11px;
-  text-transform: uppercase;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -590,9 +582,8 @@ button {
 
 .interactionCard dt {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  text-transform: uppercase;
 }
 
 .interactionCard dd {
@@ -620,7 +611,7 @@ button {
   background: var(--accent);
   font-size: 12px;
   font-weight: 900;
-  box-shadow: 0 0 14px rgba(0, 255, 159, 0.18);
+  box-shadow: none;
 }
 
 .finding h4 {
@@ -640,8 +631,7 @@ button {
   border: 1px solid var(--line);
   padding: 4px 8px;
   color: var(--muted);
-  font-size: 11px;
-  text-transform: uppercase;
+  font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
   background: #111114;
@@ -731,8 +721,6 @@ button {
   color: var(--accent);
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0;
-  text-transform: uppercase;
 }
 
 .demoHero h1 {
@@ -819,7 +807,6 @@ button {
   color: var(--muted);
   font-size: 12px;
   font-weight: 800;
-  text-transform: uppercase;
 }
 
 .checkoutPanel input,
@@ -873,7 +860,6 @@ button {
   font-size: 12px;
   color: var(--muted);
   font-weight: 800;
-  text-transform: uppercase;
 }
 
 .riskList dd {

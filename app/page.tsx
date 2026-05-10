@@ -62,13 +62,13 @@ export default function Home() {
           <div className="mark">FL</div>
           <div>
             <h1>Faultline</h1>
-            <p>Behavioral Failure Simulation</p>
+            <p>Failure simulation</p>
           </div>
         </div>
 
         <form className="form" onSubmit={submit}>
           <label className="label" htmlFor="targetUrl">
-            Target flow URL
+            Target URL
           </label>
           <input
             id="targetUrl"
@@ -85,7 +85,7 @@ export default function Home() {
         </form>
 
         <div>
-          <div className="label">Demo targets</div>
+          <div className="label">Targets</div>
           <div className="personaList" style={{ marginTop: 8 }}>
             {demoTargets.map((url) => (
               <button
@@ -104,7 +104,7 @@ export default function Home() {
         </div>
 
         <div>
-          <div className="label">Synthetic agents</div>
+          <div className="label">Agents</div>
           <div className="personaList" style={{ marginTop: 8 }}>
             {personas.map((persona) => (
               <div className="persona" key={persona.id}>
@@ -130,10 +130,7 @@ export default function Home() {
       <main className="main">
         <div className="toolbar">
           <div>
-            <h2>Pre-release human failure lab</h2>
-            <p className="summary">
-              Agents inspect live UI screenshots, DOM signals, trust language, and decision density before real users suffer through the flow.
-            </p>
+            <h2>Simulation</h2>
           </div>
           <div className="status">
             <BrainCircuit size={16} />
