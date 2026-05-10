@@ -88,13 +88,15 @@ export default function Home() {
           <div className="personaList" style={{ marginTop: 8 }}>
             {demoTargets.map((url) => (
               <button
-                className="persona"
+                className={`persona targetButton ${targetUrl === url ? "selected" : ""}`}
                 key={url}
                 type="button"
                 onClick={() => setTargetUrl(url)}
+                aria-pressed={targetUrl === url}
               >
                 <strong>{new URL(url).hostname}</strong>
                 <span>{url}</span>
+                <em>{targetUrl === url ? "Selected" : "Use target"}</em>
               </button>
             ))}
           </div>
@@ -191,19 +193,50 @@ export default function Home() {
                     {result.pageFacts.buttonCount} buttons / {result.pageFacts.linkCount} links / {result.pageFacts.inputCount} inputs
                   </strong>
                 </div>
+                <div>
+                  <span>Inputs used</span>
+                  <strong>{result.pageFacts.analysisInputs.join(" + ")}</strong>
+                </div>
+                <div>
+                  <span>Button scan</span>
+                  <strong>
+                    {result.pageFacts.interaction.stressRisk} risk / {result.pageFacts.interaction.highImpactActions.length} high-impact /{" "}
+                    {result.pageFacts.interaction.ambiguousActions.length} ambiguous
+                  </strong>
+                </div>
               </div>
             ) : null}
             {scores ? (
               <div className="scoreGrid">
-                <Score label="Confusion" value={scores.confusion} />
-                <Score label="Trust risk" value={scores.trustRisk} />
-                <Score label="Abandon" value={scores.abandonment} />
-                <Score label="Exploit" value={scores.exploitability} />
-                <Score label="Overload" value={scores.visualOverload} />
+                <Score label="Confusion" value={scores.confusion} description="How likely users are to misunderstand the page or next step." />
+                <Score label="Trust risk" value={scores.trustRisk} description="Risk from billing, confirmation, refund, security, or credibility signals." />
+                <Score label="Abandon" value={scores.abandonment} description="Chance users quit because the flow feels slow, unclear, or too demanding." />
+                <Score label="Exploit" value={scores.exploitability} description="Risk that policy gaps, support language, or high-impact actions can be abused." />
+                <Score label="Overload" value={scores.visualOverload} description="Cognitive load from text density, competing actions, fields, and layout pressure." />
               </div>
             ) : null}
             <div className="findings">
               {result ? <p className="summary">{result.summary}</p> : null}
+              {result ? (
+                <div className="interactionCard">
+                  <h4>Interaction scan</h4>
+                  <p>{result.pageFacts.interaction.note}</p>
+                  <dl>
+                    <div>
+                      <dt>Button labels</dt>
+                      <dd>{result.pageFacts.interaction.buttonLabels.join(", ") || "No buttons detected"}</dd>
+                    </div>
+                    <div>
+                      <dt>High-impact actions</dt>
+                      <dd>{result.pageFacts.interaction.highImpactActions.join(", ") || "None detected"}</dd>
+                    </div>
+                    <div>
+                      <dt>Ambiguous actions</dt>
+                      <dd>{result.pageFacts.interaction.ambiguousActions.join(", ") || "None detected"}</dd>
+                    </div>
+                  </dl>
+                </div>
+              ) : null}
               {(result?.findings ?? []).map((finding, index) => (
                 <article className={`finding ${finding.severity}`} key={`${finding.persona}-${index}`}>
                   <div className="findingTop">
@@ -234,11 +267,12 @@ export default function Home() {
   );
 }
 
-function Score({ label, value }: { label: string; value: number }) {
+function Score({ label, value, description }: { label: string; value: number; description: string }) {
   return (
-    <div className="score">
+    <div className="score" title={description}>
       <span>{label}</span>
       <strong>{value}</strong>
+      <small>{description}</small>
     </div>
   );
 }
